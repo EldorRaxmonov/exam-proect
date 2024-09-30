@@ -166,7 +166,7 @@ bot.on("message:location", async (ctx) => {
   const userLocation = ctx.message.location;
 
   // You can implement any custom logic here to verify the user's location
-  const isLocationValid = true; // Replace with real validation logic if needed
+  const isLocationValid = true;
 
   if (!isLocationValid) {
     return ctx.reply("The provided location is not valid. Please try again");
