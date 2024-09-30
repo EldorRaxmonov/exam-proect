@@ -26,7 +26,7 @@ export const categoriesKeyCommands = {
   BURGERS: "Burgers🍔",
   SHAURMA: "Shaurmas🥙",
   DONARS: "Donars🥙",
-  HOTDOG: "Hot-dogs🌭",
+  HOTDOG: "Hotdogs🌭",
   FRIES: "French Fries🍟",
   DESERTS: "Deserts🧁",
   SOUSES: "Souses🥫",

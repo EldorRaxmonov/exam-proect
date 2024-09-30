@@ -97,17 +97,17 @@ export const products = {
   [categoriesKeyCommands.HOTDOG]: [
     {
       id: 1,
-      name: "Classic Hot-dog",
+      name: "Classic Hotdog",
       cost: 7000,
     },
     {
       id: 2,
-      name: "Hot-dog",
+      name: "Hotdog",
       cost: 9000,
     },
     {
       id: 3,
-      name: "Prime Hot-dog",
+      name: "Prime Hotdog",
       cost: 13000,
     },
   ],

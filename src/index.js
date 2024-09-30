@@ -20,9 +20,7 @@ bot.use(
   })
 );
 
-
-
-//Place where bot starts working
+// Place where bot starts working
 bot.command("start", async (ctx) => {
   ctx.api.sendPhoto(
     ctx.chat.id,
@@ -34,12 +32,10 @@ bot.command("start", async (ctx) => {
   );
 });
 
-
-
-//This piece of code is responsible for button named "Order📝"
+// This piece of code is responsible for button named "Order📝"
 bot.hears(initialKeyCommands.ORDER, async (ctx) => {
-  await ctx.reply("Please choose the category, here is the menu:")
-   ctx.api.sendPhoto(
+  await ctx.reply("Please choose the category, here is the menu:");
+  ctx.api.sendPhoto(
     ctx.chat.id,
     "https://scontent.ftas7-1.fna.fbcdn.net/v/t1.6435-9/118836044_2145216755611209_4945647734055661485_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=a0f3c3&_nc_ohc=O0M5H3yE1Q0Q7kNvgFO-SUB&_nc_ht=scontent.ftas7-1.fna&_nc_gid=AVW6S10Jw8LEdadeRxLoEh6&oh=00_AYCB_ZYivUyZsmtOdpktYtf3eG714_K21bCja6xODxq5LQ&oe=67162ADC",
     {
@@ -48,9 +44,7 @@ bot.hears(initialKeyCommands.ORDER, async (ctx) => {
   );
 });
 
-
-
-//Now here starts piece of code which is responsible for "Basket🛒" button
+// Now here starts piece of code which is responsible for "Basket🛒" button
 const clearBasketKey = new InlineKeyboard()
   .text("Clear Basket🛒", "clear-basket")
   .row()
@@ -83,9 +77,7 @@ bot.hears(initialKeyCommands.BASKET, async (ctx) => {
   });
 });
 
-
-
-//After "Basket🛒" button we have "Order History📖" button and this piece of code responsible for it
+// After "Basket🛒" button we have "Order History📖" button and this piece of code responsible for it
 bot.hears(initialKeyCommands.ORDERHISTORY, async (ctx) => {
   const orderHistory = ctx.session.orderHistory || [];
 
@@ -147,30 +139,77 @@ bot.callbackQuery("confirm-order", async (ctx) => {
   });
   orderMessage += `\nTotal Cost: ${totalCost} UZS`;
 
+  // Ask the user to share their location
   await ctx.reply(orderMessage);
-  ctx.answerCallbackQuery("Your order has been confirmed and placed.");
+  await ctx.reply("Please share your location for delivery", {
+    reply_markup: {
+      keyboard: [
+        [
+          {
+            text: "Share Location📍",
+            request_location: true,
+          },
+        ],
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  });
+
+  // Clear basket after confirming order
   ctx.session.products = {};
+  ctx.answerCallbackQuery("Your order has been confirmed and placed");
 });
 
+// Handle location message from user
+bot.on("message:location", async (ctx) => {
+  const userLocation = ctx.message.location;
+
+  // You can implement any custom logic here to verify the user's location
+  const isLocationValid = true; // Replace with real validation logic if needed
+
+  if (!isLocationValid) {
+    return ctx.reply("The provided location is not valid. Please try again");
+  }
+
+  // Send delivery status updates
+  await ctx.reply("Your delivery-man is on the way");
+
+  // Wait for 5 seconds before sending the next message
+  setTimeout(async () => {
+    await ctx.reply("Your delivery-man arrived, please get your order", {
+      reply_markup: new InlineKeyboard().text("Get Order✅", "get-order"),
+    });
+  }, 5000);
+});
+
+// Handle "Get Order" button press
+bot.callbackQuery("get-order", (ctx) => {
+  ctx.answerCallbackQuery("Thank you! Enjoy your meal😊");
+  ctx.reply("Thank you for your order😊 We hope to serve you again", {
+    reply_markup: initialKey,
+  });
+});
+
+// Handle "clear-basket" callback query
 bot.callbackQuery("clear-basket", (ctx) => {
   ctx.session.products = {};
   ctx.answerCallbackQuery("Your basket has been cleared");
   ctx.reply("Your basket is empty now");
 });
 
-
-
-//After "Order History📖" button we have piece of code which is responsible for "Mobile Apps📱" button
+// After "Order History📖" button we have piece of code which is responsible for "Mobile Apps📱" button
 bot.hears(initialKeyCommands.MOBILEAPPS, async (ctx) => {
-    const message1 = `[android](https://play.google.com/store/apps/details?id=uz.makfood.service.evos&hl=ru&gl=US)`;
-    const message2 = `[iphone](https://apps.apple.com/us/app/evos-uz/id1595897228)`;
-    
-    ctx.reply("Here is our mobile apps for " + message1 + " and for " + message2, { parse_mode: "Markdown" });
-})
+  const message1 = `[android](https://play.google.com/store/apps/details?id=uz.makfood.service.evos&hl=ru&gl=US)`;
+  const message2 = `[iphone](https://apps.apple.com/us/app/evos-uz/id1595897228)`;
 
+  ctx.reply(
+    "Here is our mobile apps for " + message1 + " and for " + message2,
+    { parse_mode: "Markdown" }
+  );
+});
 
-
-//Here is another piece of code which is responsible for button named "About usℹ️"
+// Here is another piece of code which is responsible for button named "About usℹ️"
 bot.hears(initialKeyCommands.ABOUT, async (ctx) => {
   const webSiteKey = new InlineKeyboard().url(
     "Visit Website🌐",
@@ -183,22 +222,18 @@ bot.hears(initialKeyCommands.ABOUT, async (ctx) => {
     {
       caption: `About us\nDid you know that the very first branch of the company was opened back in 2006 and is successfully operating to this day? Over the course of 15 years, the company has grown from a small eatery at a bus stop into a modern, extensive network, which today includes more than 65 restaurants throughout Uzbekistan, its own fastest delivery service, a modern IT infrastructure and more than 3,000 employees.\nYou can learn more about us on our web-site🌐`,
       reply_markup: webSiteKey,
-      initialKey,
     }
   );
 });
 
-
-
-//Here is the piece of which is responsible for "Support⚙️" button
+// Here is the piece of which is responsible for "Support⚙️" button
 bot.hears(initialKeyCommands.SUPPORT, async (ctx) => {
   ctx.reply(
-    "If you have an errors, questions or ideas, you can contact to @e_raxmonov"
+    "If you have errors, questions or ideas, you can contact to @e_raxmonov"
   );
 });
 
-
-//And finally the last piece of code which is responsible for "generating inline keys" and "callback queries"
+// And finally the last piece of code which is responsible for "generating inline keys" and "callback queries"
 
 const generateInlineKeyboard = (category) => {
   const productsByCategory = products[category];
@@ -236,7 +271,8 @@ bot.hears(Object.values(categoriesKeyCommands), async (ctx) => {
     .map((item, index) => `${index + 1}. ${item.name} - ${item.cost} UZS`)
     .join("\n");
 
-  const { callBackQueryTriggers, inlineKeyboard } = generateInlineKeyboard(command);
+  const { callBackQueryTriggers, inlineKeyboard } =
+    generateInlineKeyboard(command);
   trigger = callBackQueryTriggers;
 
   ctx.reply(productListWithPrices, {
@@ -263,6 +299,5 @@ bot.callbackQuery(trigger, (ctx) => {
 
   ctx.answerCallbackQuery(`One "${product.name}" added to your basket`);
 });
-
 
 bot.start();
